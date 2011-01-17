@@ -25,7 +25,12 @@ And cpanbaker also detects perlbrew, local::lib directories to backup.
 
 To back up your whole cpan stuff:
 
-    $ cpanbaker 
+    $ cpanbaker
+
+=head1 OPTIONS
+
+
+
 
 =head1 AUTHOR
 

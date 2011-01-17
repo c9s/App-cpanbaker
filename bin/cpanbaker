@@ -18,6 +18,7 @@ my $opt_logfile;
 my $opt_debug;
 my $opt_sudo;
 my $opt_gzip;
+my $opt_help;
 my $opt_result = GetOptions(
     "exclude=s" => \$opt_exclude_parts,
     "include=s" => \$opt_include_parts,
@@ -27,21 +28,26 @@ my $opt_result = GetOptions(
     "vv"        => \$opt_very_verbose,
     "d|debug"   => \$opt_debug,
     "z|gz"      => \$opt_gzip,
+    "h|help"    => \$opt_help,
     "sudo"      => \$opt_sudo,
 );
 
 $opt_verbose ||= $opt_very_verbose;
 
+if( $opt_help ) {
+    require Pod::Simple::Text;
+    my $pod = Pod::Simple::Text->new;
+    $pod->output_fh( *STDOUT );
+    $pod->parse_file( __FILE__ );
+    exit(0);
+}
 
 my $filename = shift;
-
 
 if( $opt_installed ) {
 
     exit(0);
 }
-
-
 
 my %bak_parts = (
     bin => \&backup_bin ,
@@ -220,3 +226,70 @@ $logger->info( "Done\n" );
 # my $logger = Logger::Simple->new( LOG => File::Spec->join( $ENV{HOME} , '.cpanbaker-log' ) );
 # my $log = Log::Any->get_logger( category => __PACKAGE__ );
 # $log->info( 'test test test' );
+__END__
+
+=head1 NAME
+
+cpanbaker - backup your cpan module files.
+
+=head1 OPTIONS
+
+    $ cpanbaker [options] [filename]
+
+    --sudo
+            use sudo to backup files.
+
+    --exclude part,...
+            don't backup ...
+
+    --include part,...
+            include ...
+
+    --installed
+            get installed module list.
+
+    -l file, --log file
+            specify log file.
+
+    -v, --verbose
+            verbose message
+
+    -vv
+            very verbose message
+
+    -z, --gz
+            gzip compress
+
+    -d
+            debug mode.
+
+    -h
+            show help messages
+
+=head1 USAGE
+
+To do backup:
+
+    $ cpanbaker 
+
+To do backup with gzip compression:
+
+    $ cpanbaker -z
+
+To do backup with gzip compression and specify a filename:
+
+    $ cpanbaker -z blah.tar.gz
+
+With sudo (root permission):
+
+    $ cpanbaker --sudo
+
+To exclude perlbrew stuff:
+
+    $ cpanbaker --exclude=perlbrew
+
+Verbose mode:
+
+    $ cpanbaker -v
+
+=cut
