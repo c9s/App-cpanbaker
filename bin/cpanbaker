@@ -197,7 +197,7 @@ if ($opt_gzip) {
 
 my $tarfilename = $filename || ($tarname . $tarext);
 
-$taropts .= 'v' if( $opt_very_verbose || $opt_debug );
+$taropts .= 'v' if( $opt_verbose || $opt_very_verbose || $opt_debug );
 
 my @cmd = (
     $tarbin,
