@@ -1,0 +1,114 @@
+#!/usr/bin/env perl
+use Getopt::Long;
+use List::MoreUtils qw(uniq);
+use File::Find::Rule;
+use File::Spec;
+use Log::Dispatch;
+use warnings;
+use strict;
+
+# TODO:
+#   * clean perlbrew , cpan, cpanm dir before backing up.
+
+# my $logger = Logger::Simple->new( LOG => File::Spec->join( $ENV{HOME} , '.cpanbaker-log' ) );
+# my $log = Log::Any->get_logger( category => __PACKAGE__ );
+# $log->info( 'test test test' );
+
+$|++;
+
+my $logger = Log::Dispatch->new(
+        outputs =>  [ 
+            [ 'File' , min_level => 'error' , filename => 'cpanbaker.log' ],
+            [ 'Screen' , min_level => 'info' ],
+        ]);
+
+$logger->info( "Scanning \$PATH: " . $ENV{PATH} . "\n" );
+
+my @env_paths = uniq sort split /:/, $ENV{PATH};
+my @bin_files = ();
+
+for my $path ( @env_paths ) {
+
+    $logger->info( "Scanning " . $path . "\n" );
+
+    my @files = File::Find::Rule->file->in( $path );
+    for my $file ( @files ) {
+        my $firstline;
+        if( open(FH , "<" , $file) ) {
+            read FH , $firstline, 30;
+            close FH;
+            push @bin_files , $file if $firstline =~ m{perl};
+        } else { 
+            $logger->error( "$file: $!\n");
+            next;
+        }
+    }
+}
+
+my @libdirs = @INC;
+push @libdirs , $ENV{PERL_LOCAL_LIB_ROOT} if $ENV{PERL_LOCAL_LIB_ROOT};
+
+my $mb_opt = $ENV{PERL_MB_OPT};
+my $mm_opt = $ENV{PERL_MM_OPT};
+
+#     PERL_MB_OPT="--install_base /Users/c9s/perl5"
+#     PERL_MM_OPT="INSTALL_BASE=/Users/c9s/perl5"
+if( $mb_opt && $mb_opt =~ m{--install_base\s+(\S+)} )  {
+    $logger->info( "Found INSTALL_BASE from Module::Build opt: $1\n" );
+    push @libdirs , $1;
+}
+
+if( $mm_opt && $mm_opt =~ m{INSTALL_BASE=(\S+)} ) {
+    $logger->info( "Found INSTALL_BASE from ExtUtil::MakeMaker opt: $1\n" );
+    push @libdirs , $1;
+}
+
+@libdirs = uniq sort @libdirs;
+@libdirs = grep !/^\.$/,@libdirs;
+
+
+my %cpandir = ( 
+    cpan => File::Spec->join( $ENV{HOME} , '.cpan' ),
+    cpanplus => File::Spec->join( $ENV{HOME} , '.cpanplus' ),
+    cpanminus => File::Spec->join( $ENV{HOME} , '.cpanm' ),
+);
+
+my @cpandirs = ();
+for my $type ( keys %cpandir ) {
+    my $dir = $cpandir{ $type };
+    if( -e $dir ) {
+        $logger->info( "Found $type: $dir\n" );
+        push @cpandirs , $dir;
+    }
+}
+
+if( $ENV{PERLBREW_ROOT} ) {
+    $logger->info( "Found perlbrew root:" . $ENV{PERLBREW_ROOT} . "\n" );
+    push @libdirs, $ENV{PERLBREW_ROOT};
+}
+
+my $tarbin = 'tar';
+my $taropts = 'cf';
+my $tarext = '.tar';
+my $tarname = "cpanbak";
+my $tarexclude = '';
+my $tarfilename = $tarname . $tarext;
+
+
+my $skip_logfiles = 1;
+my $verbose = 1;
+
+if( $verbose ) {
+    $taropts .= 'v';
+}
+if( $skip_logfiles ) {
+    $tarexclude .= ' --exclude "*.log" ';
+}
+
+my $cmd = "$tarbin $taropts $tarfilename $tarexclude " . join( ' ' , map { qq|"$_"| } @cpandirs , @libdirs , @bin_files );
+
+$logger->info( "Executing: \$ " . substr($cmd,0,90) . "...\n" );
+
+$logger->info( "Generating $tarfilename ...\n" );
+system( $cmd );
+$logger->info( "Done\n" );
