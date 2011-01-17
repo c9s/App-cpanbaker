@@ -18,6 +18,13 @@ no_index:
     - inc
     - t
     - xt
+requires:
+  File::Find::Rule: 0
+  File::Spec: 0
+  Getopt::Long: 0
+  List::MoreUtils: 0
+  Log::Dispatch: 0
 resources:
   license: http://dev.perl.org/licenses/
+  repository: origin
 version: 0.01

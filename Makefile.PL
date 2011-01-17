@@ -2,7 +2,11 @@ use inc::Module::Install;
 name 'App-cpanbaker';
 all_from 'lib/App/cpanbaker.pm';
 
-# requires '';
+requires 'Getopt::Long';
+requires 'List::MoreUtils';
+requires 'File::Find::Rule';
+requires 'File::Spec';
+requires 'Log::Dispatch';
 
 tests 't/*.t';
 author_tests 'xt';
@@ -10,4 +14,7 @@ author_tests 'xt';
 test_requires 'Test::More';
 auto_set_repository;
 auto_include;
+
+install_script 'bin/cpanbaker';
+
 WriteAll;
