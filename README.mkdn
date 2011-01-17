@@ -1,39 +1,63 @@
 # NAME
 
-App::cpanbaker - cpan module baker, backup your whole cpan module files
-
-# SYNOPSIS
-
-    use App::cpanbaker;
-
-# DESCRIPTION
-
-Use cpanbaker, backup your whole cpan module files.
-
-cpanbaker not only backup module files , also script files and cpan, cpanplus,
-cpanminus, minicpan configs.
-
-And cpanbaker also detects perlbrew, local::lib directories to backup.
-
-To back up your whole cpan stuff:
-
-    $ cpanbaker
+cpanbaker - backup your cpan module files.
 
 # OPTIONS
 
+    $ cpanbaker [options] [filename]
 
+    --sudo
+            use sudo to backup files.
 
+    --exclude part,...
+            don't backup ...
 
+    --include part,...
+            include ...
 
+    --installed
+            get installed module list.
 
+    -l file, --log file
+            specify log file.
 
-# AUTHOR
+    -v, --verbose
+            verbose message
 
-Yo-An Lin <cornelius.howl {at} gmail.com>
+    -vv
+            very verbose message
 
-# SEE ALSO
+    -z, --gz
+            gzip compress
 
-# LICENSE
+    -d
+            debug mode.
 
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
+    -h
+            show help messages
+
+# USAGE
+
+To do backup:
+
+    $ cpanbaker 
+
+To do backup with gzip compression:
+
+    $ cpanbaker -z
+
+To do backup with gzip compression and specify a filename:
+
+    $ cpanbaker -z blah.tar.gz
+
+With sudo (root permission):
+
+    $ cpanbaker --sudo
+
+To exclude perlbrew stuff:
+
+    $ cpanbaker --exclude=perlbrew
+
+Verbose mode:
+
+    $ cpanbaker -v
