@@ -1,0 +1,31 @@
+# NAME
+
+App::cpanbaker - cpan module baker, backup your whole cpan module files
+
+# SYNOPSIS
+
+    use App::cpanbaker;
+
+# DESCRIPTION
+
+Use cpanbaker, backup your whole cpan module files.
+
+cpanbaker not only backup module files , also script files and cpan, cpanplus,
+cpanminus, minicpan configs.
+
+And cpanbaker also detects perlbrew, local::lib directories to backup.
+
+To back up your whole cpan stuff:
+
+    $ cpanbaker 
+
+# AUTHOR
+
+Yo-An Lin <cornelius.howl {at} gmail.com>
+
+# SEE ALSO
+
+# LICENSE
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
