@@ -7,6 +7,7 @@ requires 'List::MoreUtils';
 requires 'File::Find::Rule';
 requires 'File::Spec';
 requires 'Log::Dispatch';
+requires 'Pod::Simple::Text';
 
 tests 't/*.t';
 author_tests 'xt';
