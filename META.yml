@@ -1,7 +1,7 @@
 ---
-abstract: ~
+abstract: 'cpan module baker, backup your whole cpan module files'
 author:
-  - 'Default Name <default {at} example.com>'
+  - 'Yo-An Lin <cornelius.howl {at} gmail.com>'
 build_requires:
   ExtUtils::MakeMaker: 6.42
 configure_requires:
@@ -26,5 +26,5 @@ requires:
   Log::Dispatch: 0
 resources:
   license: http://dev.perl.org/licenses/
-  repository: origin
+  repository: git://github.com/c9s/App-cpanbaker.git
 version: 0.01

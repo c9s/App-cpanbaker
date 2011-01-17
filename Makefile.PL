@@ -17,4 +17,6 @@ auto_include;
 
 install_script 'bin/cpanbaker';
 
+readme_markdown_from 'lib/App/cpanbaker.pm';
+
 WriteAll;

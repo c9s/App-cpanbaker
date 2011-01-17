@@ -8,19 +8,28 @@ __END__
 
 =head1 NAME
 
-App::cpanbaker -
+App::cpanbaker - cpan module baker, backup your whole cpan module files
 
 =head1 SYNOPSIS
 
-  use App::cpanbaker;
+    use App::cpanbaker;
 
 =head1 DESCRIPTION
 
-App::cpanbaker is
+Use cpanbaker, backup your whole cpan module files.
+
+cpanbaker not only backup module files , also script files and cpan, cpanplus,
+cpanminus, minicpan configs.
+
+And cpanbaker also detects perlbrew, local::lib directories to backup.
+
+To back up your whole cpan stuff:
+
+    $ cpanbaker 
 
 =head1 AUTHOR
 
-Default Name E<lt>default {at} example.comE<gt>
+Yo-An Lin E<lt>cornelius.howl {at} gmail.comE<gt>
 
 =head1 SEE ALSO
 
