@@ -20,23 +20,25 @@ my $opt_debug;
 my $opt_sudo;
 my $opt_gzip;
 my $opt_help;
+my $opt_dry;
 
-my $opt_skip_pod;
+my $opt_skip_pods;
 my $opt_skip_manpages;
 
 my $opt_result = GetOptions(
-    "exclude=s" => \$opt_exclude_parts,
-    "include=s" => \$opt_include_parts,
-    "installed" => \$opt_installed,       # get installed modules
-    "l|log=s"   => \$opt_logfile,
-    "v|verbose" => \$opt_verbose,
-    "vv"        => \$opt_very_verbose,
-    "d|debug"   => \$opt_debug,
-    "z|gz"      => \$opt_gzip,
-    "h|help"    => \$opt_help,
-    "sudo"      => \$opt_sudo,
-    "skip-pod"  => \$opt_skip_pod,
+    "exclude=s"     => \$opt_exclude_parts,
+    "include=s"     => \$opt_include_parts,
+    "installed"     => \$opt_installed,       # get installed modules
+    "l|log=s"       => \$opt_logfile,
+    "v|verbose"     => \$opt_verbose,
+    "vv"            => \$opt_very_verbose,
+    "d|debug"       => \$opt_debug,
+    "z|gz"          => \$opt_gzip,
+    "h|help"        => \$opt_help,
+    "sudo"          => \$opt_sudo,
+    "skip-pods"      => \$opt_skip_pods,
     "skip-manpages" => \$opt_skip_manpages,
+    "dry"           => \$opt_dry,
 );
 
 $opt_verbose ||= $opt_very_verbose;
@@ -107,7 +109,7 @@ sub backup_cpanconfig {
 
 sub backup_bin {
 
-    $logger->info( "Scanning \$PATH\n" );
+    $logger->info( "* Searching perl scripts from \$PATH\n" );
     $logger->info( $ENV{PATH} . "\n" ) 
         if $opt_debug;
 
@@ -162,7 +164,8 @@ sub backup_locallib {
         $logger->info( "Found INSTALL_BASE from ExtUtil::MakeMaker opt: $1\n" ) if $opt_verbose;
         push @paths , $1;
     }
-    return @paths;
+
+    return uniq sort @paths;
 }
 
 sub backup_manpages {
@@ -173,6 +176,13 @@ sub backup_libs {
     my @libdirs = @INC;
     # when exclude local-lib or .. should remove them from INC paths
 
+    if ( $exclude_parts{'local-lib'} ) {
+        @libdirs = grep !/^$ENV{PERL_LOCAL_LIB_ROOT}/,@libdirs;
+    }
+
+    if ( $exclude_parts{perlbrew} ) {
+        @libdirs = grep !/^$ENV{PERLBREW_ROOT}/, @libdirs;
+    }
     return grep !/^\.$/,uniq sort @libdirs;
 }
 
@@ -189,14 +199,21 @@ print STDERR "Will backup: " . join(', ', keys %include_parts ) . "\n";
 
 
 my @tar_paths;
-for my $part ( keys %bak_parts ) {
+for my $part ( keys %include_parts ) {
 
-    $logger->info( "Gathering information of $part ...\n" );
+    $logger->info( "* Gathering information of $part ...\n" );
 
     my $cb = $bak_parts{ $part };
     my @paths = $cb->( $logger );
+
+    $logger->debug( "\t" . join(' ' , @paths ) . "\n" ) if $opt_debug;
+
+    # use Data::Dumper; warn Dumper( $part , \@paths );
+
     push @tar_paths, @paths;
 }
+
+
 
 my $tarbin = 'tar';
 my $taropts = 'cf';
@@ -211,7 +228,7 @@ if( $exclude_parts{perlbrew} ) {
 }
 
 push @exclude_pattern, File::Spec->join( $ENV{HOME} , '.cpanm' , 'work' );
-push @exclude_pattern, '*.pod' if $opt_skip_pod;
+push @exclude_pattern, '*.pod' if $opt_skip_pods;
 push @exclude_pattern, '*.pm3' if $opt_skip_manpages;
 
 
@@ -242,7 +259,7 @@ $logger->debug( "Executing: \$ " .
         substr($cmdstr,0,90) . "...\n" ) if $opt_debug;
 
 $logger->info( "Generating $tarfilename ...\n" );
-system( $cmdstr );
+system( $cmdstr ) unless $opt_dry;
 $logger->info( "Done\n" );
 
 # TODO:
@@ -272,11 +289,20 @@ cpanbaker - backup your cpan module files.
     --include part,...
             include ...
 
+    --dry
+            dry run. do not archive files.
+
     --installed
             get installed module list.
 
     -l file, --log file
             specify log file.
+
+    --skip-pods
+            skip pod files.
+
+    --skip-manpages
+            skip manpage files.
 
     -v, --verbose
             verbose message
