@@ -5,6 +5,7 @@ use File::Find::Rule;
 use File::Spec;
 use Log::Dispatch;
 use Getopt::Long;
+use DateTime;
 use warnings;
 use strict;
 $|++;
@@ -19,6 +20,10 @@ my $opt_debug;
 my $opt_sudo;
 my $opt_gzip;
 my $opt_help;
+
+my $opt_skip_pod;
+my $opt_skip_manpages;
+
 my $opt_result = GetOptions(
     "exclude=s" => \$opt_exclude_parts,
     "include=s" => \$opt_include_parts,
@@ -30,6 +35,8 @@ my $opt_result = GetOptions(
     "z|gz"      => \$opt_gzip,
     "h|help"    => \$opt_help,
     "sudo"      => \$opt_sudo,
+    "skip-pod"  => \$opt_skip_pod,
+    "skip-manpages" => \$opt_skip_manpages,
 );
 
 $opt_verbose ||= $opt_very_verbose;
@@ -56,10 +63,14 @@ my %bak_parts = (
     'local-lib' => \&backup_locallib,
     manpages => \&backup_manpages,
     cpanconfig => \&backup_cpanconfig,
+    libs    => \&backup_libs,
 );
 my @bak_parts = keys %bak_parts;
 my %exclude_parts = map { $_ => 1 } split /,/, $opt_exclude_parts;
 my %include_parts = map { $_ => 1 } (split /,/,$opt_include_parts) || @bak_parts;
+
+my @exclude_pattern = ();
+
 
 my $logger = Log::Dispatch->new(
         outputs =>  [ 
@@ -95,8 +106,10 @@ sub backup_cpanconfig {
 }
 
 sub backup_bin {
-    $logger->info( "Scanning \$PATH: " . $ENV{PATH} . "\n" ) 
-        if $opt_verbose;
+
+    $logger->info( "Scanning \$PATH\n" );
+    $logger->info( $ENV{PATH} . "\n" ) 
+        if $opt_debug;
 
     my @env_paths = uniq sort split /:/, $ENV{PATH};
     my @bin_files = ();
@@ -158,6 +171,8 @@ sub backup_manpages {
 
 sub backup_libs {
     my @libdirs = @INC;
+    # when exclude local-lib or .. should remove them from INC paths
+
     return grep !/^\.$/,uniq sort @libdirs;
 }
 
@@ -173,7 +188,6 @@ for my $p ( keys %include_parts ) {
 print STDERR "Will backup: " . join(', ', keys %include_parts ) . "\n";
 
 
-
 my @tar_paths;
 for my $part ( keys %bak_parts ) {
 
@@ -187,8 +201,21 @@ for my $part ( keys %bak_parts ) {
 my $tarbin = 'tar';
 my $taropts = 'cf';
 my $tarext = '.tar';
-my $tarname = "cpanbak";
+my $tarname = join(
+        '-',"cpanbak", $^O ,DateTime->now->ymd('-'));
+
 my $tarexclude = ' --exclude "*.log"';
+
+if( $exclude_parts{perlbrew} ) {
+    push @exclude_pattern , $ENV{PERLBREW_ROOT};
+}
+
+push @exclude_pattern, File::Spec->join( $ENV{HOME} , '.cpanm' , 'work' );
+push @exclude_pattern, '*.pod' if $opt_skip_pod;
+push @exclude_pattern, '*.pm3' if $opt_skip_manpages;
+
+
+$tarexclude .= join ' ' ,map { qq| --exclude "$_"| } @exclude_pattern;
 
 if ($opt_gzip) {
     $taropts .= 'z';

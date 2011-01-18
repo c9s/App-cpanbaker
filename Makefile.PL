@@ -8,6 +8,7 @@ requires 'File::Find::Rule';
 requires 'File::Spec';
 requires 'Log::Dispatch';
 requires 'Pod::Simple::Text';
+requires 'DateTime';
 
 tests 't/*.t';
 author_tests 'xt';
