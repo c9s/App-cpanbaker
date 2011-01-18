@@ -15,11 +15,20 @@ cpanbaker - backup your cpan module files.
     --include part,...
             include ...
 
+    --dry
+            dry run. do not archive files.
+
     --installed
             get installed module list.
 
     -l file, --log file
             specify log file.
+
+    --skip-pods
+            skip pod files.
+
+    --skip-manpages
+            skip manpage files.
 
     -v, --verbose
             verbose message

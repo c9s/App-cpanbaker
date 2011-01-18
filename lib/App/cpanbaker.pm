@@ -23,14 +23,9 @@ cpanminus, minicpan configs.
 
 And cpanbaker also detects perlbrew, local::lib directories to backup.
 
-To back up your whole cpan stuff:
+=head1 USAGE
 
-    $ cpanbaker
-
-=head1 OPTIONS
-
-
-
+Please check the documentation of L<bin/cpanbaker>.
 
 =head1 AUTHOR
 
