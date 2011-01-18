@@ -1,4 +1,8 @@
 Revision history for Perl extension App::cpanbaker
 
+0.02    二  1/18 13:52:10 2011
+        More options. --dry , --skip-pods, --skip-manpages ..
+        Filename with OS name , date
+
 0.01    Mon Jan 17 23:26:26 2011
         - original version
