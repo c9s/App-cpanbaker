@@ -137,6 +137,17 @@ sub backup_bin {
 }
 
 sub backup_minicpan {
+    my $file = File::Spec->join( $ENV{HOME} , '.minicpanrc' );
+    open my $fh , "<" , $file;
+    my @lines = <$fh>;
+    close $fh;
+    chomp( @lines );
+    my ($local) = grep /^local:\s*/, @lines;
+    if( $local ) {
+        $local =~ s{^local:\s*}{};
+        $logger->info( 'Found minicpan local: ' . $local . "\n" );
+        return $local;
+    }
     return ();
 }
 
@@ -201,7 +212,7 @@ print STDERR "Will backup: " . join(', ', keys %include_parts ) . "\n";
 my @tar_paths;
 for my $part ( keys %include_parts ) {
 
-    $logger->info( "* Gathering information of $part ...\n" );
+    $logger->info( "Gathering information of $part ...\n" );
 
     my $cb = $bak_parts{ $part };
     my @paths = $cb->( $logger );
@@ -241,7 +252,7 @@ if ($opt_gzip) {
 
 my $tarfilename = $filename || ($tarname . $tarext);
 
-$taropts .= 'v' if( $opt_verbose || $opt_very_verbose || $opt_debug );
+$taropts .= 'v' if( $opt_very_verbose || $opt_debug );
 
 my @cmd = (
     $tarbin,

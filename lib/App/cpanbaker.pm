@@ -23,6 +23,15 @@ cpanminus, minicpan configs.
 
 And cpanbaker also detects perlbrew, local::lib directories to backup.
 
+=head1 SUPPORTS
+
+    * script files
+    * perlbrew.
+    * local::lib.
+    * inc path.
+    * minicpan
+    * cpan, cpanplus, cpanm config directories.
+
 =head1 USAGE
 
 Please check the documentation of L<bin/cpanbaker>.
