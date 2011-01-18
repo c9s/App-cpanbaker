@@ -11,9 +11,11 @@ cpanbaker - backup your cpan module files.
 
     --exclude part,...
             don't backup ...
+            valid part names are minicpan, bin, local-lib, perlbrew, libs
 
     --include part,...
-            include ...
+            backup include ...
+            valid part names are minicpan, bin, local-lib, perlbrew, libs
 
     --dry
             dry run. do not archive files.
@@ -78,6 +80,10 @@ To exclude minicpan stuff:
 To exclude minicpan and perlbrew:
 
     $ cpanbaker --exclude=perlbrew,minicpan
+
+To backup perlbrew stuff only:
+
+    $ cpanbaker --include=perlbrew
 
 Verbose mode:
 
