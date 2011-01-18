@@ -21,6 +21,7 @@ my $opt_sudo;
 my $opt_gzip;
 my $opt_help;
 my $opt_dry;
+my $opt_extract;
 
 my $opt_skip_pods;
 my $opt_skip_manpages;
@@ -39,6 +40,7 @@ my $opt_result = GetOptions(
     "skip-pods"      => \$opt_skip_pods,
     "skip-manpages" => \$opt_skip_manpages,
     "dry"           => \$opt_dry,
+    "x|extract"             => \$opt_extract,
 );
 
 $opt_verbose ||= $opt_very_verbose;
@@ -52,6 +54,15 @@ if( $opt_help ) {
 }
 
 my $filename = shift;
+
+if( $opt_extract ) {
+    unless ( $filename ) {
+        die('Please specify filename');
+    }
+    my @cmd = ( "tar", "xpf", $filename , "-C /");
+    exit(0);
+}
+
 
 if( $opt_installed ) {
 
@@ -224,10 +235,8 @@ for my $part ( keys %include_parts ) {
     push @tar_paths, @paths;
 }
 
-
-
 my $tarbin = 'tar';
-my $taropts = 'cf';
+my $taropts = 'cpf';
 my $tarext = '.tar';
 my $tarname = join(
         '-',"cpanbak", $^O ,DateTime->now->ymd('-'));
