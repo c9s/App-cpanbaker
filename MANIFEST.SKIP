@@ -19,4 +19,5 @@
 ^\.shipit$
 ^\.git/
 \.sw[po]$
-.log$
+\.log$
+\.tar$

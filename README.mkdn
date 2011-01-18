@@ -47,17 +47,21 @@ cpanbaker - backup your cpan module files.
 
 # USAGE
 
-To do backup:
+To backup:
 
     $ cpanbaker 
 
-To do backup with gzip compression:
+To backup with gzip compression:
 
     $ cpanbaker -z
 
-To do backup with gzip compression and specify a filename:
+To backup with gzip compression and specify a filename:
 
     $ cpanbaker -z blah.tar.gz
+
+To backup in dry-run mode:
+
+    $ cpanbaker --dry
 
 With sudo (root permission):
 
@@ -67,6 +71,22 @@ To exclude perlbrew stuff:
 
     $ cpanbaker --exclude=perlbrew
 
+To exclude minicpan stuff:
+
+    $ cpanbaker --exclude=minicpan
+
+To exclude minicpan and perlbrew:
+
+    $ cpanbaker --exclude=perlbrew,minicpan
+
 Verbose mode:
 
     $ cpanbaker -v
+
+Very verbose mode:
+
+    $ cpanbaker -vv
+
+Debug mode:
+
+    $ cpanbaker -d
