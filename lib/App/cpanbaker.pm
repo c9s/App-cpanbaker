@@ -34,7 +34,7 @@ And cpanbaker also detects perlbrew, local::lib directories to backup.
 
 =head1 USAGE
 
-Please check the documentation of L<bin/cpanbaker>.
+Please check the documentation of L<cpanbaker>.
 
 =head1 AUTHOR
 
