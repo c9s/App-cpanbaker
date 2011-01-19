@@ -59,13 +59,20 @@ if( $opt_help ) {
     exit(0);
 }
 
-my $filename = shift;
 
+my $filename = shift;
 unless( $filename ) {
-    print "To show help message, please use -h option.\n";
+    print STDERR "To show help message, please use -h option.\n";
 }
 
-if( $opt_extract ) {
+if( $opt_installed ) {
+    use ExtUtils::Installed;
+    my ($inst) = ExtUtils::Installed->new();
+    my (@modules) = $inst->modules();
+    print $_ , "\n" for @modules;
+    exit(0);
+}
+elsif( $opt_extract ) {
     unless ( $filename ) {
         die('Please specify filename');
     }
@@ -73,11 +80,6 @@ if( $opt_extract ) {
     exit(0);
 }
 
-
-if( $opt_installed ) {
-
-    exit(0);
-}
 
 my %bak_parts = (
     bin => \&backup_bin ,
@@ -201,7 +203,7 @@ sub backup_locallib {
 }
 
 sub backup_manpages {
-    my $manpath = qx(man -w)
+    my $manpath = qx(man -w);
     $logger->info( "Found manpages path: $manpath\n" );
 
     my @paths = split /:/,$manpath;
@@ -211,7 +213,7 @@ sub backup_manpages {
         for( @files ) {
             open my $fh, "<", $_;
             my $firstline = <$fh>;
-            close my $fh;
+            close $fh;
 
             push @manfiles , $_ if $firstline =~ /Pod::/;
         }
@@ -232,7 +234,7 @@ sub backup_libs {
     }
     @libdirs = grep !/^\.$/,uniq sort @libdirs;
 
-    if( $verbose_opt ) {
+    if( $opt_verbose ) {
         $logger->info( "Perl lib paths:\n" );
         $logger->info( "\t" . $_ . "\n" ) for @libdirs;
     }
@@ -403,6 +405,11 @@ With sudo (root permission):
 To exclude perlbrew stuff:
 
     $ cpanbaker --exclude=perlbrew
+
+To get installed modules:
+
+    $ cpanbaker --installed > module_list
+    $ cpanm < module_list   # reinstall modules
 
 To exclude minicpan stuff:
 

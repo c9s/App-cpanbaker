@@ -9,6 +9,7 @@ requires 'File::Spec';
 requires 'Log::Dispatch';
 requires 'Pod::Simple::Text';
 requires 'DateTime';
+requires 'ExtUtils::Installed';
 
 tests 't/*.t';
 author_tests 'xt';
