@@ -76,6 +76,11 @@ To exclude perlbrew stuff:
 
     $ cpanbaker --exclude=perlbrew
 
+To get installed modules:
+
+    $ cpanbaker --installed > module_list
+    $ cpanm < module_list   # reinstall modules
+
 To exclude minicpan stuff:
 
     $ cpanbaker --exclude=minicpan
