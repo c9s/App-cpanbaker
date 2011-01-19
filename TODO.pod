@@ -17,4 +17,20 @@ Refactor:
         preserve_permission => 0,
     );
 
+    CPANBaker::Steps::local_lib;
+    CPANBaker::Steps::bin;
+    CPANBaker::Steps::perlbrew;
+    CPANBaker::Steps::....;
+
+    Interface:
+        
+        sub prepare {  };
+        sub paths {  };
+        sub exclude_patterns {  };
+        sub finish {  };
+
+        sub before_extract {  }
+        sub after_extract {  }
+        sub extract_opts {  }
+
 =cut
