@@ -230,7 +230,13 @@ sub backup_libs {
     if ( $exclude_parts{perlbrew} ) {
         @libdirs = grep !/^$ENV{PERLBREW_ROOT}/, @libdirs;
     }
-    return grep !/^\.$/,uniq sort @libdirs;
+    @libdirs = grep !/^\.$/,uniq sort @libdirs;
+
+    if( $verbose_opt ) {
+        $logger->info( "Perl lib paths:\n" );
+        $logger->info( "\t" . $_ . "\n" ) for @libdirs;
+    }
+    return @libdirs;
 }
 
 
