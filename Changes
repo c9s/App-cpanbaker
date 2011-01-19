@@ -1,5 +1,7 @@
 Revision history for Perl extension App::cpanbaker
 
+0.04    三  1/19 13:51:57 2011
+        - bzip2 flag
 
 0.03    二  1/18 14:03:51 2011
         - update pods

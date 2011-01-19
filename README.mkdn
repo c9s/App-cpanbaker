@@ -39,9 +39,12 @@ cpanbaker - backup your cpan module files.
             very verbose message
 
     -z, --gz
-            gzip compress
+            tar with gzip compression.
 
-    -d
+    -j, --bz
+            tar with bzip2 compression.
+
+    -d, --debug
             debug mode.
 
     -h
