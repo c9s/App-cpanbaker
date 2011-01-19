@@ -89,10 +89,11 @@ my %bak_parts = (
     manpages => \&backup_manpages,
     cpanconfig => \&backup_cpanconfig,
     libs    => \&backup_libs,
+    perlmeta => \&backup_perlmeta,
 );
-my @bak_parts = keys %bak_parts;
+my @bak_steps = qw(perlmeta bin perlbrew minicpan local-lib manpages cpanconfig libs);
 my %exclude_parts = map { $_ => 1 } split /,/, $opt_exclude_parts;
-my %include_parts = map { $_ => 1 } (split /,/,$opt_include_parts) || @bak_parts;
+my %include_parts = map { $_ => 1 } (split /,/,$opt_include_parts) || @bak_steps;
 
 my @exclude_pattern = ();
 
@@ -107,11 +108,27 @@ sub check_partname {
     my $name = shift;
     if( ! $bak_parts{ $name } )  {
         print STDERR "Invalid part name: $name\n";
-        print STDERR "Valid part name: ", join(', ',@bak_parts) . "\n"; 
+        print STDERR "Valid part name: ", join(', ',@bak_steps) . "\n"; 
         exit(0);
     }
 }
 
+sub backup_perlmeta {
+    my %meta;
+    %meta = map { $_ => $ENV{$_} } grep /^PERL/, keys %ENV;
+    $meta{inc} = \@INC;
+
+
+    my $path = ".cpanbak-meta";
+
+    $logger->info( "Saving env & inc info to $path.\n" );
+
+    use YAML;
+    YAML::DumpFile( $path, \%meta );
+
+    $logger->debug( Dump( \%meta ) . "\n" ) if $opt_debug;
+    return $path;
+}
 
 sub backup_cpanconfig {
     my %cpandir = ( 

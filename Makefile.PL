@@ -10,6 +10,7 @@ requires 'Log::Dispatch';
 requires 'Pod::Simple::Text';
 requires 'DateTime';
 requires 'ExtUtils::Installed';
+requires 'YAML';
 
 tests 't/*.t';
 author_tests 'xt';
