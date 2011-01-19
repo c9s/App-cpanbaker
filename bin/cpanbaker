@@ -37,10 +37,10 @@ my $opt_result = GetOptions(
     "z|gz"          => \$opt_gzip,
     "h|help"        => \$opt_help,
     "sudo"          => \$opt_sudo,
-    "skip-pods"      => \$opt_skip_pods,
+    "skip-pods"     => \$opt_skip_pods,
     "skip-manpages" => \$opt_skip_manpages,
     "dry"           => \$opt_dry,
-    "x|extract"             => \$opt_extract,
+    "x|extract"     => \$opt_extract,
 );
 
 $opt_verbose ||= $opt_very_verbose;
@@ -54,6 +54,10 @@ if( $opt_help ) {
 }
 
 my $filename = shift;
+
+unless( $filename ) {
+    print "To show help message, please use -h option.\n";
+}
 
 if( $opt_extract ) {
     unless ( $filename ) {
